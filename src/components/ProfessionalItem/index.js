@@ -5,6 +5,8 @@ import {
 
 import { darkColorScheme } from '../../colors';
 
+import ProfilePlaceholder from '../../assets/images/profile-placeholder.png';
+
 const {
   surfaceColor, secondaryColor, onSecondaryColor, onSurfaceColor
 } = darkColorScheme;
@@ -42,15 +44,12 @@ const styles = StyleSheet.create({
 });
 
 export default function ProfessionalItem(data) {
-  // placeholder values
-  const name = 'John';
-  const surname = 'Doe';
-  const photoURL = 'https://cnaca.ca/wp-content/uploads/2018/10/user-icon-image-placeholder.jpg';
-
+  const { professional } = data
+  const { name, surname } = professional;
 
   return (
     <View style={styles.itemContainer}>
-      <Image style={styles.profilePhoto} source={{ uri: photoURL }} />
+      <Image style={styles.profilePhoto} source={ProfilePlaceholder} />
       <View style={styles.informationWrapper}>
         <Text style={{ fontSize: 26, fontWeight: 'bold', color: onSurfaceColor }}>
           {`${name} ${surname}`}

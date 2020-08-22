@@ -74,13 +74,28 @@ export default function App() {
     }
   }
   async function writeProfileImages(data) {
+    let dirs = RNFetchBlob.fs.dirs;
     
+    const promisesArr = data.map(async item => {
+      try {
+       const request = await RNFetchBlob
+        .config({
+          path: `${dirs.PictureDir}/OBarbeiro/cache/profiles/${item.name}_${item.surname}.png`
+        })
+        .fetch('GET', item.photoURL);
+        return request;
+      } catch(err) {
+        setError(err)
+      }
+    })
+    await Promise.all(promisesArr);
   }
 
   useEffect(() => {
     requestStoragePermission();
     fetchProfessionals();
     storeProfessionals(professionals);
+    writeProfileImages(professionals);
   }, []);
 
   return (

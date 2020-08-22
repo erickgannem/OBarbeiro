@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Courgette.ttf",
+      "sha1": "1799684b986dd4ffb046edd1db2dca6fa185adc8"
+    },
+    {
+      "path": "src/assets/fonts/Pacifico.ttf",
+      "sha1": "d987c38e86ac0942ed45615da28fe872eae91970"
+    },
+    {
+      "path": "src/assets/fonts/Satisfy.ttf",
+      "sha1": "fd2f096e9d0cd82b9f8e191d7f73167176d0f729"
+    }
+  ]
+}

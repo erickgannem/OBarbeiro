@@ -3,24 +3,24 @@ import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { StatusBar, PermissionsAndroid } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import RNFetchBlob from "rn-fetch-blob";
+import RNFetchBlob from 'rn-fetch-blob';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { darkColorScheme } from './src/colors';
+import { darkColorScheme } from './colors';
 
-import Header from './src/components/Header';
-import MainView from './src/views/MainView';
-import ServicesView from './src/views/ServicesView';
-import ProfessionalsView from './src/views/ProfessionalsView';
+import Header from './components/Header';
+import MainView from './views/MainView';
+import ServicesView from './views/ServicesView';
+import ProfessionalsView from './views/ProfessionalsView';
 
-import DateContext from './src/context/DateContext';
-import ProfessionalsContext from './src/context/ProfessionalsContext';
+import DateContext from './context/DateContext';
+import ProfessionalsContext from './context/ProfessionalsContext';
 
-import api from './src/helpers/api';
+import api from './helpers/api';
 
 const {
   primaryDarkVariant,
@@ -37,22 +37,28 @@ export default function App() {
   const [error, setError] = useState({});
   const [storagePermission, setStoragePermission] = useState('');
 
-  async function fetchProfessionals() {
+
+  async function init() {
     try {
-      const fetchedProfessionals = await api.get('/professionals');
-      const { data } = fetchedProfessionals;
+      const persisted = await AsyncStorage.getItem('PROFESSIONALS');
+
+      if (persisted) {
+        const value = JSON.parse(persisted);
+        setProfessionals(value);
+        return;
+      }
+
+      const response = await api.get('/professionals');
+      const { data } = response;
+
+      const jsonValue = JSON.stringify(data);
+      await AsyncStorage.setItem('PROFESSIONALS', jsonValue);
       setProfessionals(data);
     } catch (err) {
-      setError({ error: err });
+      setError(err);
     }
   }
-  async function storeProfessionals(professionalsToStore) {
-    try {
-      await AsyncStorage.setItem('professionals', JSON.stringify(professionalsToStore));
-    } catch (err) {
-      setError({ error: err });
-    }
-  }
+
   async function requestStoragePermission() {
     try {
       const granted = await PermissionsAndroid.request(
@@ -70,32 +76,30 @@ export default function App() {
         setStoragePermission(PermissionsAndroid.RESULTS.DENIED);
       }
     } catch (err) {
-      setError({ error: err });
+      setError(err);
     }
   }
   async function writeProfileImages(data) {
-    let dirs = RNFetchBlob.fs.dirs;
-    
-    const promisesArr = data.map(async item => {
+    const { dirs } = RNFetchBlob.fs;
+
+    const promisesArr = data.map(async (item) => {
       try {
-       const request = await RNFetchBlob
-        .config({
-          path: `${dirs.PictureDir}/OBarbeiro/cache/profiles/${item.name}_${item.surname}.png`
-        })
-        .fetch('GET', item.photoURL);
+        const request = await RNFetchBlob
+          .config({
+            path: `${dirs.PictureDir}/OBarbeiro/cache/profiles/${item.name}_${item.surname}.png`
+          })
+          .fetch('GET', item.photoURL);
         return request;
-      } catch(err) {
-        setError(err)
+      } catch (err) {
+        setError(err);
       }
-    })
+    });
     await Promise.all(promisesArr);
   }
 
   useEffect(() => {
     requestStoragePermission();
-    fetchProfessionals();
-    storeProfessionals(professionals);
-    writeProfileImages(professionals);
+    init();
   }, []);
 
   return (

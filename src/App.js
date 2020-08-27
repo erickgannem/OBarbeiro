@@ -34,8 +34,8 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   const [date, setDate] = useState({});
   const [professionals, setProfessionals] = useState([]);
-  const [error, setError] = useState({});
-  const [storagePermission, setStoragePermission] = useState('');
+  const [, setError] = useState({});
+  const [, setStoragePermission] = useState('');
 
 
   async function init() {
@@ -58,7 +58,6 @@ export default function App() {
       setError(err);
     }
   }
-
   async function requestStoragePermission() {
     try {
       const granted = await PermissionsAndroid.request(
@@ -91,7 +90,7 @@ export default function App() {
           .fetch('GET', item.photoURL);
         return request;
       } catch (err) {
-        setError(err);
+        return setError(err);
       }
     });
     await Promise.all(promisesArr);
@@ -100,6 +99,7 @@ export default function App() {
   useEffect(() => {
     requestStoragePermission();
     init();
+    writeProfileImages(professionals);
   }, []);
 
   return (

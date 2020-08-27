@@ -44,8 +44,10 @@ const styles = StyleSheet.create({
 });
 
 export default function ProfessionalItem(data) {
-  const { professional } = data
-  const { name, surname } = professional;
+  const { professional } = data;
+  const {
+    name, surname, availability, services
+  } = professional;
 
   return (
     <View style={styles.itemContainer}>
@@ -54,7 +56,12 @@ export default function ProfessionalItem(data) {
         <Text style={{ fontSize: 26, fontWeight: 'bold', color: onSurfaceColor }}>
           {`${name} ${surname}`}
         </Text>
-        <Text style={{ fontSize: 16, fontStyle: 'italic', color: onSurfaceColor }}>Hidratação Capilar, Sobrancelhas, Maquiagem</Text>
+        <Text style={{ fontSize: 16, fontStyle: 'italic', color: onSurfaceColor }}>{services.map((service) => service.name)}</Text>
+        <Text style={{ fontSize: 16, fontStyle: 'italic', color: onSurfaceColor }}>
+          Disponível às:
+          {' '}
+          {availability.join(', ')}
+        </Text>
         <TouchableOpacity style={styles.bookButton} onPress={() => {}}>
           <Text style={{ fontWeight: 'bold', fontSize: 16, color: onSecondaryColor }}>Agendar</Text>
         </TouchableOpacity>

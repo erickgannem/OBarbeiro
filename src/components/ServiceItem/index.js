@@ -7,7 +7,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { darkColorScheme } from '../../colors';
 
-// eslint-disable-next-line max-len
 const {
   surfaceColor,
   primaryDarkVariant,
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: onPrimaryColor,
   },
-  descriptionText: {
+  nameText: {
     fontSize: 16,
   },
   costText: {
@@ -77,7 +76,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function ServiceItem({ icon, description, cost }) {
+export default function ServiceItem({ icon, name, cost }) {
   const [selected, setSelected] = useState(false);
 
   return (
@@ -103,9 +102,10 @@ export default function ServiceItem({ icon, description, cost }) {
         <Ionicons name={icon} size={64} color={onSurfaceColor} />
       </View>
       <View style={styles.informationWrapper}>
-        <Text style={[styles.textStyling, styles.descriptionText]}>{description}</Text>
+        <Text style={[styles.textStyling, styles.nameText]}>{name}</Text>
         <Text style={[styles.textStyling, styles.costText]}>
           R$
+          {' '}
           {cost}
         </Text>
       </View>

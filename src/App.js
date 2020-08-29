@@ -19,6 +19,7 @@ import ProfessionalsView from './views/ProfessionalsView';
 
 import DateContext from './context/DateContext';
 import ProfessionalsContext from './context/ProfessionalsContext';
+import ServicesContext from './context/ServicesContext';
 
 import api from './helpers/api';
 
@@ -34,29 +35,51 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   const [date, setDate] = useState({});
   const [professionals, setProfessionals] = useState([]);
+  const [services, setServices] = useState([]);
   const [, setError] = useState({});
   const [, setStoragePermission] = useState('');
 
 
-  async function init() {
-    try {
-      const persisted = await AsyncStorage.getItem('PROFESSIONALS');
+  function init() {
+    async function loadProfessionals() {
+      try {
+        const persisted = await AsyncStorage.getItem('PROFESSIONALS');
 
-      if (persisted) {
-        const value = JSON.parse(persisted);
-        setProfessionals(value);
-        return;
+        if (persisted) {
+          const value = JSON.parse(persisted);
+          setProfessionals(value);
+          return;
+        }
+        const response = await api.get('/professionals');
+        const { data } = response;
+
+        const jsonValue = JSON.stringify(data);
+        await AsyncStorage.setItem('PROFESSIONALS', jsonValue);
+        setProfessionals(data);
+      } catch (err) {
+        setError(err);
       }
-
-      const response = await api.get('/professionals');
-      const { data } = response;
-
-      const jsonValue = JSON.stringify(data);
-      await AsyncStorage.setItem('PROFESSIONALS', jsonValue);
-      setProfessionals(data);
-    } catch (err) {
-      setError(err);
     }
+    async function loadServices() {
+      try {
+        const persisted = await AsyncStorage.getItem('SERVICES');
+
+        if (persisted) {
+          const value = JSON.parse(persisted);
+          setServices(value);
+          return;
+        }
+        const response = await api.get('/services');
+        const { data } = response;
+
+        const jsonValue = JSON.stringify(data);
+        await AsyncStorage.setItem('SERVICES', jsonValue);
+        setServices(data);
+      } catch (err) {
+        setError(err);
+      }
+    }
+    return { loadServices, loadProfessionals };
   }
   async function requestStoragePermission() {
     try {
@@ -98,58 +121,62 @@ export default function App() {
 
   useEffect(() => {
     requestStoragePermission();
-    init();
+    init().loadProfessionals();
+    init().loadServices();
+
     writeProfileImages(professionals);
   }, []);
 
   return (
     <DateContext.Provider value={{ date, setDate }}>
       <ProfessionalsContext.Provider value={{ professionals, setProfessionals }}>
-        <NavigationContainer>
-          <StatusBar backgroundColor={primaryDarkVariant} barStyle="dark-content" />
-          <Header />
-          <Tab.Navigator
-            tabBarOptions={{
-              style: {
-                backgroundColor: primaryColor,
-                borderTopColor: 'transparent',
-              },
-              activeTintColor: onPrimaryColor,
-              inactiveTintColor: backgroundColor,
-            }}
-          >
-            <Tab.Screen
-              name="Inicio"
-              component={MainView}
-              options={{
-                tabBarLabel: 'Inicio',
-                tabBarIcon: ({ color, size }) => (
-                  <Ionicons name="md-home" size={size} color={color} />
-                ),
+        <ServicesContext.Provider value={{ services, setServices }}>
+          <NavigationContainer>
+            <StatusBar backgroundColor={primaryDarkVariant} barStyle="dark-content" />
+            <Header />
+            <Tab.Navigator
+              tabBarOptions={{
+                style: {
+                  backgroundColor: primaryColor,
+                  borderTopColor: 'transparent',
+                },
+                activeTintColor: onPrimaryColor,
+                inactiveTintColor: backgroundColor,
               }}
-            />
-            <Tab.Screen
-              name="Serviços"
-              component={ServicesView}
-              options={{
-                tabBarLabel: 'Serviços',
-                tabBarIcon: ({ size, color }) => (
-                  <Entypo name="scissors" size={size} color={color} />
-                ),
-              }}
-            />
-            <Tab.Screen
-              name="Profissionais"
-              component={ProfessionalsView}
-              options={{
-                tabBarLabel: 'Profissionais',
-                tabBarIcon: ({ size, color }) => (
-                  <Ionicons name="md-star" size={size} color={color} />
-                ),
-              }}
-            />
-          </Tab.Navigator>
-        </NavigationContainer>
+            >
+              <Tab.Screen
+                name="Inicio"
+                component={MainView}
+                options={{
+                  tabBarLabel: 'Inicio',
+                  tabBarIcon: ({ color, size }) => (
+                    <Ionicons name="md-home" size={size} color={color} />
+                  ),
+                }}
+              />
+              <Tab.Screen
+                name="Serviços"
+                component={ServicesView}
+                options={{
+                  tabBarLabel: 'Serviços',
+                  tabBarIcon: ({ size, color }) => (
+                    <Entypo name="scissors" size={size} color={color} />
+                  ),
+                }}
+              />
+              <Tab.Screen
+                name="Profissionais"
+                component={ProfessionalsView}
+                options={{
+                  tabBarLabel: 'Profissionais',
+                  tabBarIcon: ({ size, color }) => (
+                    <Ionicons name="md-star" size={size} color={color} />
+                  ),
+                }}
+              />
+            </Tab.Navigator>
+          </NavigationContainer>
+        </ServicesContext.Provider>
       </ProfessionalsContext.Provider>
     </DateContext.Provider>
   );

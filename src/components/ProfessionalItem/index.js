@@ -40,6 +40,15 @@ const styles = StyleSheet.create({
     height: 40,
     marginTop: 10,
     borderRadius: 5,
+  },
+  professionalName: {
+    fontSize: 26, fontWeight: 'bold', color: onSurfaceColor, marginBottom: 5
+  },
+  servicesName: {
+    fontSize: 16, fontStyle: 'italic', color: onSurfaceColor, marginBottom: 5
+  },
+  availabilityText: {
+    fontSize: 16, fontStyle: 'italic', color: onSurfaceColor, fontWeight: 'bold'
   }
 });
 
@@ -53,11 +62,13 @@ export default function ProfessionalItem(data) {
     <View style={styles.itemContainer}>
       <Image style={styles.profilePhoto} source={ProfilePlaceholder} />
       <View style={styles.informationWrapper}>
-        <Text style={{ fontSize: 26, fontWeight: 'bold', color: onSurfaceColor }}>
+        <Text style={styles.professionalName}>
           {`${name} ${surname}`}
         </Text>
-        <Text style={{ fontSize: 16, fontStyle: 'italic', color: onSurfaceColor }}>{services.map((service) => service.name)}</Text>
-        <Text style={{ fontSize: 16, fontStyle: 'italic', color: onSurfaceColor }}>
+        <Text style={styles.servicesName}>
+          {services.map((service) => service.name).join(', ')}
+        </Text>
+        <Text style={styles.availabilityText}>
           Disponível às:
           {' '}
           {availability.join(', ')}

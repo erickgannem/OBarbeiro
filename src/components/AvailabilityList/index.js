@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 
 import AvailabilityCard from '../AvailabilityCard';
+
+import ProfessionalsContext from '../../context/ProfessionalsContext';
 
 import { darkColorScheme } from '../../colors';
 
@@ -19,23 +21,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const DATA = [
-  { id: '1', time: '08:35' },
-  { id: '2', time: '09:20' },
-  { id: '3', time: '10:35' },
-  { id: '4', time: '14:40' },
-  { id: '5', time: '15:30' },
-];
-
 export default function AvailabilityList() {
+  const { professionals } = useContext(ProfessionalsContext);
+
   return (
     <View style={styles.cardsGroupContainer}>
       <FlatList
-        data={DATA}
+        data={professionals}
         renderItem={({ item }) => (
-          <AvailabilityCard data={item} key={item.id} />
+          <AvailabilityCard data={item} key={item._id} />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
       />
     </View>
   );
